@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KeyStack – Amazon Keyword Extractor</title>
+  <meta name="description" content="Extract and analyze keywords from Amazon product pages. Find competitor keywords, optimize listings, and boost your ranking.">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --accent: #7c3aed;
+      --bg: #fafbfc;
+      --text: #1a1a2e;
+      --muted: #6b7280;
+      --card-bg: #fff;
+      --border: #e8ecf1;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ─── Nav ─── */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 18px 24px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .nav-brand span { font-size: 26px; }
+    .nav-links { display: flex; gap: 24px; align-items: center; }
+    .nav-links a { color: var(--muted); font-size: 14px; font-weight: 600; }
+    .nav-links a:hover { color: var(--primary); text-decoration: none; }
+
+    /* ─── Hero ─── */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 60px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .hero h1 {
+      font-size: 44px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 540px;
+      margin: 0 auto 32px;
+    }
+    .cta-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 14px 36px;
+      border-radius: 10px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+    }
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 28px rgba(79, 70, 229, 0.4);
+      text-decoration: none;
+    }
+
+    /* ─── Features ─── */
+    .features {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 60px 24px;
+    }
+    .features h2 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 40px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 24px;
+    }
+    .feature-icon { font-size: 32px; margin-bottom: 12px; }
+    .feature-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p { font-size: 14px; color: var(--muted); }
+
+    /* ─── How It Works ─── */
+    .how {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 24px;
+    }
+    .how h2 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 40px;
+    }
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    .step-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .step p { font-size: 14px; color: var(--muted); }
+
+    /* ─── Supported Sites ─── */
+    .sites {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+      text-align: center;
+    }
+    .sites h2 { font-size: 28px; font-weight: 800; margin-bottom: 16px; }
+    .sites p { font-size: 14px; color: var(--muted); }
+    .site-tags {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .site-tag {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ─── CTA Section ─── */
+    .cta-section {
+      text-align: center;
+      padding: 60px 24px;
+      background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+      margin: 0 24px;
+      border-radius: 20px;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    .cta-section h2 { font-size: 28px; font-weight: 800; margin-bottom: 12px; }
+    .cta-section p { font-size: 16px; color: var(--muted); margin-bottom: 24px; }
+
+    /* ─── Footer ─── */
+    .footer {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 30px; }
+      .hero { padding: 50px 20px 40px; }
+      .nav { padding: 14px 16px; }
+      .footer { flex-direction: column; gap: 12px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav-brand"><span>🔍</span> KeyStack</div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="privacy.html">Privacy</a>
+      <a class="cta-btn" href="#install" style="padding: 8px 20px; font-size: 13px;">Install Free</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>Extract Keywords from Any Amazon Product Page</h1>
+    <p>Uncover competitor keywords, optimize your listings, and build backend search terms — all in one click.</p>
+    <a class="cta-btn" href="#install" id="install">Add to Chrome — Free</a>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <h2>Everything You Need for Amazon SEO</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔑</div>
+        <h3>Smart Keyword Extraction</h3>
+        <p>Automatically extracts single word, short tail, mid tail, and long tail keywords from any product listing.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📍</div>
+        <h3>Source Mapping</h3>
+        <p>See exactly where each keyword appears — Title, Bullets, Description, A+ Content, or Specs.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛠️</div>
+        <h3>Search Term Builder</h3>
+        <p>Build backend search terms with a live byte counter. Stay within Amazon's 250-byte limit.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Product Info at a Glance</h3>
+        <p>Instantly view ASIN, brand, price, category, rating, and review count — all copyable.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📥</div>
+        <h3>CSV Export</h3>
+        <p>Download all keywords or just your selection as a CSV file for further analysis.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Zero Setup</h3>
+        <p>Works instantly on any Amazon product page. No account, no API keys, no configuration.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how" id="how-it-works">
+    <h2>How It Works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <h3>Install the Extension</h3>
+          <p>Add KeyStack to Chrome with one click. No sign-up required.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <h3>Visit Any Amazon Product Page</h3>
+          <p>Navigate to a product listing on any supported Amazon marketplace.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <h3>Click the KeyStack Tab</h3>
+          <p>A side panel opens with all extracted keywords organized by type, with frequency counts and source tags.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div>
+          <h3>Select, Copy, or Export</h3>
+          <p>Pick the keywords you need, copy them to clipboard, build search terms, or download as CSV.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Supported Sites -->
+  <section class="sites">
+    <h2>Works on 10 Amazon Marketplaces</h2>
+    <p>One extension, global coverage.</p>
+    <div class="site-tags">
+      <span class="site-tag">🇺🇸 Amazon US</span>
+      <span class="site-tag">🇮🇳 Amazon IN</span>
+      <span class="site-tag">🇬🇧 Amazon UK</span>
+      <span class="site-tag">🇩🇪 Amazon DE</span>
+      <span class="site-tag">🇫🇷 Amazon FR</span>
+      <span class="site-tag">🇮🇹 Amazon IT</span>
+      <span class="site-tag">🇪🇸 Amazon ES</span>
+      <span class="site-tag">🇨🇦 Amazon CA</span>
+      <span class="site-tag">🇯🇵 Amazon JP</span>
+      <span class="site-tag">🇦🇺 Amazon AU</span>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Ready to Uncover Hidden Keywords?</h2>
+    <p>Join sellers who use KeyStack to optimize their Amazon listings.</p>
+    <a class="cta-btn" href="#install">Add to Chrome — Free</a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span>&copy; 2026 KeyStack. All rights reserved.</span>
+    <div class="footer-links">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="mailto:keystack.extensions@gmail.com">Contact</a>
+    </div>
+  </footer>
+
+</body>
+</html>
