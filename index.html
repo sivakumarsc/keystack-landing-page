@@ -50,6 +50,8 @@
     .nav-links { display: flex; gap: 24px; align-items: center; }
     .nav-links a { color: var(--muted); font-size: 14px; font-weight: 600; }
     .nav-links a:hover { color: var(--primary); text-decoration: none; }
+    .nav-links .cta-btn { color: #fff; }
+    .nav-links .cta-btn:hover { color: #fff; }
 
     /* ─── Hero ─── */
     .hero {
@@ -210,11 +212,36 @@
     .footer-links { display: flex; gap: 20px; }
     .footer-links a { color: var(--muted); font-size: 13px; }
 
+    /* ─── Tablet ─── */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 36px; }
+      .hero p { font-size: 16px; }
+      .features h2, .how h2, .sites h2, .cta-section h2 { font-size: 24px; }
+      .features-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+      .nav-links { gap: 16px; }
+    }
+
+    /* ─── Mobile ─── */
     @media (max-width: 600px) {
-      .hero h1 { font-size: 30px; }
-      .hero { padding: 50px 20px 40px; }
-      .nav { padding: 14px 16px; }
-      .footer { flex-direction: column; gap: 12px; text-align: center; }
+      .nav { padding: 14px 16px; flex-wrap: wrap; gap: 12px; }
+      .nav-links { gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%; }
+      .hero { padding: 40px 16px 32px; }
+      .hero h1 { font-size: 28px; }
+      .hero p { font-size: 15px; margin-bottom: 24px; }
+      .cta-btn { font-size: 15px; padding: 12px 28px; }
+      .features { padding: 40px 16px; }
+      .features h2, .how h2, .sites h2, .cta-section h2 { font-size: 22px; margin-bottom: 24px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .feature-card { padding: 20px 18px; }
+      .how { padding: 40px 16px; }
+      .how h2 { margin-bottom: 24px; }
+      .steps { gap: 18px; }
+      .sites { padding: 32px 16px 40px; }
+      .site-tags { gap: 8px; }
+      .site-tag { padding: 6px 12px; font-size: 12px; }
+      .cta-section { padding: 40px 16px; border-radius: 14px; }
+      .cta-section p { font-size: 14px; }
+      .footer { flex-direction: column; gap: 12px; text-align: center; margin-top: 40px; padding: 24px 16px; }
     }
   </style>
 </head>
